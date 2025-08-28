@@ -5,6 +5,7 @@ typedef struct Stack
 
     int top;
     int arr[100];
+    int maxSize;
 
 } Stack;
 
