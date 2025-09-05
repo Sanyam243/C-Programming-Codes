@@ -59,7 +59,7 @@ void addStudent(char name[], float marks, int rollNumber, SMS *system)
         system->curr->next = newStudent;
         system->curr = newStudent;
     }
-    printf("Student %s added successfully !!\n", name);
+    printf("✅ Student %s added successfully !!\n", name);
 }
 
 void displayDetails(Student *s)
@@ -85,7 +85,7 @@ void search(int rollNumber, SMS *system)
     }
     printf("There is no student found with %d Roll Number\n", rollNumber);
 }
-int exists(int rollNumber, SMS *system)
+Student* exists(int rollNumber, SMS *system)
 {
 
     Student *s = system->head;
@@ -96,12 +96,12 @@ int exists(int rollNumber, SMS *system)
         if (s->rollNumber == rollNumber)
         {
             
-            return 1;
+            return s;
         }
         s = s->next;
     }
     printf("There is no student found with %d Roll Number\n", rollNumber);
-    return 0;
+    return NULL;
 }
 void displayAll(SMS *system)
 {
@@ -133,6 +133,44 @@ void update(int rollNumber, SMS *system)
         s = s->next;
     }
     printf("There is no student found with %d Roll Number\n", rollNumber);
+}
+
+void delete(int rollNumber,SMS* system){
+
+    //Head  we want to delete
+
+    char name[50];
+
+    if(system->head->rollNumber== rollNumber){
+        Student* s = system->head->next;
+        strcpy(name,system->head->name);
+        free(system->head);
+        system->head = s;
+
+        if(s==NULL){
+            system->curr == NULL;
+        }
+    }else{
+
+        Student* s = system->head;
+        while(s!=NULL){
+
+            
+
+           if(s->next->rollNumber== rollNumber){
+                
+                Student* nextStudent = s->next->next;
+                strcpy(name,s->next->name);
+                free(s->next);
+                s->next = nextStudent;
+                if(nextStudent==NULL)
+                system->curr =s;
+                break;
+            }
+        }
+    }
+
+    printf("%s details deleted successfully\n",name);
 }
 
 int main()
@@ -181,6 +219,11 @@ int main()
             printf("Enter the marks of the new Student\n");
             scanf("%f", &marks);
 
+            if(exists(rollNumber,system)!=NULL){
+                printf("Student with roll number: %d already exists",rollNumber);
+                continue;
+            }
+
             addStudent(name, marks, rollNumber, system);
         }
         else if (choice == 2)
@@ -203,16 +246,18 @@ int main()
             printf("Enter the Roll Number of the Student for the updation\n");
             scanf("%d", &rollNumber);
 
-            if(!exits(system,rollNumber)){
-                continue;
-            }
+           Student* s = exists(rollNumber,system);
+
+           if(s==NULL){
+            continue; // Again show the menu
+           }
 
             // Do you want to update the Roll Number?
             // Yes/No
             // Yes-> New roll number input
             // No Next Question proceed
 
-            printf("Do you want to update the Roll Number?\n Yes \nNo");
+            printf("Do you want to update the Roll Number?\nYes \nNo\n");
             char ch[5];
             scanf("%s", ch);
 
@@ -220,32 +265,49 @@ int main()
             {
                 printf("Enter the New Roll Number of the Student\n");
                 scanf("%d", &rollNumber);
+                s->rollNumber = rollNumber;
             }
 
-            printf("Do you want to update the Name?\n Yes \nNo");
-            char ch[5];
+            printf("Do you want to update the Name?\nYes \nNo\n");
+           
             scanf("%s", ch);
 
             if (strcmp(ch, "Yes") == 0)
             {
                 printf("Enter the New Name of the Student\n");
                 scanf("%s", name);
+                strcpy(s->name,name);
             }
 
-             printf("Do you want to update the Marks of the Student?\n Yes \nNo");
-            char ch[5];
+             printf("Do you want to update the Marks of the Student?\nYes \nNo\n");
+            
             scanf("%s", ch);
 
             if (strcmp(ch, "Yes") == 0)
             {
                 printf("Enter the New Marks of the Student\n");
                 scanf("%d", &marks);
+                s->marks = marks;
             }
+            printf("Student details updated successfully\n");
+            displayDetails(s);
 
-            update(rollNumber,name,marks, system);
+            
         }
         else if (choice == 5)
         {
+            int rollNumber;
+            printf("Enter the Roll Number of the Student for the deletion\n");
+            scanf("%d", &rollNumber);
+
+           Student* s = exists(rollNumber,system);
+
+           if(s==NULL){
+            continue; // Again show the menu
+           }
+
+           delete(rollNumber,system);
+
         }
         else if (choice == 6)
         {
